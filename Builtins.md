@@ -32,6 +32,7 @@ pub fn deinit(self: XdgDirs, allocator: std.mem.Allocator) void {
 This is used for what's known as "type-erased interfaces".
 Long story short, this builtin allows the Reader/Writer interfaces to work its magic.
 
+"The reason this exists is for a very specific pattern — type-erased interfaces. When you have a pointer to just one field (like a writer or reader interface), but you need to get back to the full struct that owns it."
 
 ## @embedFile("path")
 **bake a file content into binary at compile time**
