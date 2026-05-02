@@ -5,9 +5,11 @@ Slices are fat pointers that hold the address of the underlying array, and the l
 There are four "variants" of a slice that I always get lost on:
 
 // 1. var slice, const contents (most common for strings)
+```zig
 var name: []const u8 = "Alice";
 name = "Bob";     // ✅ can repoint
 name[0] = 'Z';    // ❌ can't touch the characters
+```
 
 // 2. const slice, const contents (fully locked)
 const name: []const u8 = "Alice";
