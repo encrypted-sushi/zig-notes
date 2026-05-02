@@ -58,4 +58,34 @@ doSomething() catch |err| return err
 ```
 
 
+## errdefer — defer only on error
+
+`errdefer` is like `defer`, but only runs if the function returns an error.
+If the function succeeds, it is ignored.
+
+```zig
+const thing = try allocate_something();  // acquire
+errdefer free_something(thing);          // declare cleanup RIGHT HERE
+
+// if anything below errors: errdefer fires, thing is freed
+// if everything succeeds:   errdefer ignored, caller owns thing
+```
+
+The pattern: **acquire, then immediately declare the error cleanup.**
+Co-locate the allocation with its error-path cleanup — never separate them.
+
+```zig
+// real example -- multiple allocations, each protected:
+const a = try allocator.dupe(u8, str_a);
+errdefer allocator.free(a);
+
+const b = try allocator.dupe(u8, str_b);
+errdefer allocator.free(b);  // if this fails, `a` is also freed by its errdefer
+
+// for optional allocations:
+errdefer if (maybe) |val| allocator.free(val);
+```
+
+Without `errdefer` you would need boolean flags to track what was allocated.
+`errdefer` replaces all of that — no flags, no manual tracking, no mistakes.
 
