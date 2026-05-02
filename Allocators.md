@@ -109,4 +109,14 @@ buf = try allocator.realloc(buf, 128);  // grow it
 defer allocator.free(buf);
 ```
 
-### 
+### allocator.dupe(T)
+**allocate, and copy into the allocated memory**
+```zig
+const a = try allocator.dupe(u8, "hello");
+const dst = try allocator.dupe(u8, source_data);
+```
+
+## Coming later
+`std.ArrayList` -- a growable array that manages alloc/realloc for you.
+Worth its own page.
+
