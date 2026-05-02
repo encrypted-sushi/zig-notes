@@ -68,3 +68,45 @@ test "my test" {
     defer allocator.free(s);
 }
 ```
+
+## How to use the allocators to allocate heap memory
+These should apparently cover 95% of use cases
+```
+dupe          ← copy an existing slice
+alloc         ← allocate a new slice
+create        ← allocate a single struct/value
+allocPrint    ← allocate a formatted string
+free          ← release alloc/dupe/allocPrint memory
+destroy       ← release create memory
+```
+
+so, the thing to remember is
+```
+alloc/dupe/realloc/allocPrint  => deallocate with allocator.free()  
+create                         => deallocate with allocator.destroy()  
+```
+
+### allocator.alloc(T, n)
+**allocate a slice of n items of type T**
+```zig
+const buf = try allocator.alloc(u8, 1024);  // []u8 of 1024 bytes
+defer allocator.free(buf);
+```
+
+### allocator.create(T)
+**allocate a single item, returns a pointer**
+```zig
+const node = try allocator.create(MyStruct);  // *MyStruct
+defer allocator.destroy(node);  // note: destroy, not free!
+node.* = .{ .value = 42 };
+```
+
+### allocator.realloc(slice, new_len)
+**resize an existing allocation**
+```zig
+var buf = try allocator.alloc(u8, 64);
+buf = try allocator.realloc(buf, 128);  // grow it
+defer allocator.free(buf);
+```
+
+### 
