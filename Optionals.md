@@ -35,3 +35,11 @@ Return an error if an optional is null
 ```zig
 const home = environ_map.get("HOME") orelse return error.HomeDirNotSet;
 ```
+
+NOTE: ORELSE and TRY (Errors) have the same grain
+```zig
+const home = environ_map.get("HOME") orelse return error.HomeDirNotSet;
+// "get HOME, or if null, bail out with an error"
+try doSomething();
+// "do this, or if it errors, bail out"
+```
