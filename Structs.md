@@ -4,10 +4,11 @@ Structs are a collection of data types in one "thing".
 Structs can have functions defined in them, like methods of a Class.
 
 
-## Constructor (the init() function)
+## Constructor
 Some structs define .init() while other may not.  The ones that don't seem to be those that are simply setting values of the struct fields.
+NOTE: .init() is not a keyword nor a requirement.  It is simply a convention, and the constsructor can be called anything.
 
-The .init(), if it exists or written, shall return a copy of the struct, because most structs lives on the stack.
+The constructor, if it exists or written, shall return a copy of the struct, because most structs lives on the stack.
 ```zig
 pub const Rectangle = struct {
     length: u32,
@@ -48,7 +49,7 @@ pub const DynamicHashMap = struct {
 }
 ```
 
-If the struct only allocates memory during .init(), then do not store the allocator.  Instead, make sure that the destructor (.deinit()) also takes an allocator as its argument.  
+If the struct only allocates memory when the constructor is called, then do not store the allocator.  Instead, make sure that the destructor also takes an allocator as its argument.  
 NOTE: The destructor usually only reads the struct, and deallocates.  This is why the first argument is not a pointer to the struct.
 ```zig
 pub fn deinit(self: DynamicHashMap, allocator: std.mem.Allocator)
@@ -56,6 +57,7 @@ pub fn deinit(self: DynamicHashMap, allocator: std.mem.Allocator)
 
 ## Destructors
 If I want to iterate over the fields of a struct in a destructor, Zig provides a comptime trick that allows this.
+NOTE: .deinit() is not a keyword nor a requirement.  Just like .init() it is simply a convention, and the destructor can be called anything.
 ```zig
 pub fn deinit(self: XdgDirs, allocator: std.mem.Allocator) void {
     inline for (@typeInfo(XdgDirs).@"struct".fields) |field| {
@@ -65,4 +67,12 @@ pub fn deinit(self: XdgDirs, allocator: std.mem.Allocator) void {
     }
     if (self.runtime_dir) |dir| allocator.free(dir);
 }
+```
+
+## Dot-syntax
+I can call a struct function directly
+```zig
+dirs.deinit(allocator);
+// Zig rewrites this as:
+XdgDirs.deinit(dirs, allocator);
 ```
