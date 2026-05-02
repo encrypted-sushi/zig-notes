@@ -61,7 +61,7 @@ NOTE: .deinit() is not a keyword nor a requirement.  Just like .init() it is sim
 ```zig
 pub fn deinit(self: dirs, allocator: std.mem.Allocator) void {
     inline for (@typeInfo(XdgDirs).@"struct".fields) |field| {
-        if (field.field_type == []const u8) {
+        if (field.type == []const u8) {
             allocator.free(@field(self, field.name));
         }
     }
