@@ -59,7 +59,7 @@ pub fn deinit(self: DynamicHashMap, allocator: std.mem.Allocator)
 If I want to iterate over the fields of a struct in a destructor, Zig provides a comptime trick that allows this.
 NOTE: .deinit() is not a keyword nor a requirement.  Just like .init() it is simply a convention, and the destructor can be called anything.
 ```zig
-pub fn deinit(self: XdgDirs, allocator: std.mem.Allocator) void {
+pub fn deinit(self: dirs, allocator: std.mem.Allocator) void {
     inline for (@typeInfo(XdgDirs).@"struct".fields) |field| {
         if (field.field_type == []const u8) {
             allocator.free(@field(self, field.name));
@@ -70,7 +70,8 @@ pub fn deinit(self: XdgDirs, allocator: std.mem.Allocator) void {
 ```
 
 ## Dot-syntax
-I can call a struct function directly
+I can call a struct function directly.  
+This means the first parameter's type (dirs vs *dirs) determines whether Zig passes a copy or a pointer automatically.
 ```zig
 dirs.deinit(allocator);
 // Zig rewrites this as:
