@@ -1,0 +1,14 @@
+# StringHashMap
+A StringHashMap is a key/value datatype in zig.
+The key is a string, and the value can be any type; i.e., StringHashMap(T).
+
+One of the most important thing to remember, is that the keys are not stored by the StringHashMap.
+Instead, keys are pointers to slices that were provided when adding the key/value pair.
+
+What does this mean?  
+Because StringHashMap does not copy the keys, if the array that holds the underlying string is dereferenced, the key becomes garbage.
+
+If the values are also strings, consider using a BufMap.  
+A BufMap is what std.process.Init.envion_map uses, and apparently is built on top of StringHashMap.
+
+
