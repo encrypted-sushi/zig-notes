@@ -27,6 +27,12 @@ pub fn deinit(self: XdgDirs, allocator: std.mem.Allocator) void {
 }
 ```
 
+## @fieldParentPtr("field_name", field_ptr)
+**Gets Struct for the given field_name and field_ptr provided**
+This is used for what's known as "type-erased interfaces".
+Long story short, this builtin allows the Reader/Writer interfaces to work its magic.
+
+
 ## @embedFile("path")
 **bake a file content into binary at compile time**
 ```zig
