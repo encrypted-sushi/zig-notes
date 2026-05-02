@@ -33,14 +33,17 @@ name[0] = 'Z';              // ✅ can still modify characters
 ```
 
 The underlying array of a slice is read-only when []const u8:  
+```
 []const u8  
-  │      │  
-  │      └── the characters it points to are read-only  
-  └── this part (pointer + length) can be var or const  
-      this depends on how the variable is declared:  var | const  
+    │   │  
+    │   └── the characters it points to are read-only  
+    └── this part (pointer + length) can be var or const  
+        this depends on how the variable is declared:  var | const  
+```
 
 The underlying array of a slice is mutable when []u8:  
-[]u8
-  │
+```
+[]u8  
+  │  
   └── the characters it points to are mutable because it does not have const like the previous one
-
+```
