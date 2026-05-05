@@ -44,7 +44,8 @@ const default_config = @embedFile("defaults.json");
 **size of a type in bytes, comptime**
 ```zig
 @sizeOf(u32) // 4
-```
+
+
 
 ## @TypeOf(value)
 **get the type of a value**
@@ -71,4 +72,36 @@ if (some_comptime_condition) {
     @compileError("you can't use this type here");
 }
 ```
+
+## @as(T, value)
+**treat this value as type T**  
+When assigning a value to a struct field of a particular type, we sometimes need to explicitly make it clear.
+For example, if I want to assign null to a field that expects a pointer to a spec"ific type, I need a mechanism to say "This null, means a 'null' for this specific pointer that it expects"
+So far, only encountered using this in conjuction with @ptrCast(), explained next:
+```zig
+attrs[i] = .{ .default_value_ptr = @ptrCast(&@as(?[]const u8, null)) };
+```
+
+## @ptrCast(ptr, value)
+**erase this pointer to \*anyopaque**
+Using the same example as above...  
+```zig
+attrs[i] = .{ .default_value_ptr = @ptrCast(&@as(?[]const u8, null)) };
+```
+At first glance, this looked like a "huh?" to me.  
+There's a _really_ good reason for this.
+
+Before we "erase" the pointer type, we cast it AS something...   why?  
+"null" has no size. 
+@as(?[]const u8, null) says "this is a null that occupies exactly the space of ?[]const u8".  
+Now, with & (address of) provided, the compiler will know "Ok, I need to read x bytes to get the entire data".  
+
+A slice in Zig is what's called a "fat pointer".  
+It doesn't just provide the memory address.  
+It also provides length in bytes.  
+So \*anyopaque, able to take any kind of pointer, and:
+ - can be casted back later
+ - can hold the ptr temporarily
+ - until the user "re-converts" it back into what type of data it was supposed to have been pointing to, maybe?
+
 
