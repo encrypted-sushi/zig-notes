@@ -10,7 +10,7 @@ const MyUnion = union {
 // size = 8 bytes (just the largest one)
 ```
 
-It does NOT hold bot han int and a float in the above example.  
+It does NOT hold both an int and a float in the above example.  
 That is what Structs are for.
 ```zig
 const MyStruct = struct {
