@@ -9,6 +9,13 @@ This follows Zig's one simple rule about memory allocation:
 std.mem.Allocator is just an interface — a pointer to some implementation plus a vtable of function pointers.  
 The actual memory strategy is chosen by the caller, who supplies their preferred allocator.  
 
+## Principle
+1. whoever allocates, owns.
+2. whoever dupes (copies), owns the copy.
+3. whoever owns, must free.
+4. toOwnedSlice() / returning a slice = transferring ownership to the caller.
+5. passing a slice/pointer without transferring = borrowing. borrower must not free.
+
 ## General Purpose Allocator
 **as a newb, use this**
 Safe, detects leaks in debug mode.
@@ -79,11 +86,25 @@ allocPrint    ← allocate a formatted string
 free          ← release alloc/dupe/allocPrint memory
 destroy       ← release create memory
 ```
+**What's not covere in the above, are "managed" containers.**  
+e.g.
+```zig
+// ArrayList  ←  deallocate with .deinit(allocator)
+var list: std.ArrayList([]const u8) = .empty;
+list.deinit(allocator);
 
-so, the thing to remember is
+// NOTE:
+//   If an ArrayList list.toOwnedSlice() is called/returned,
+//   then the ownership is transferred out => now a plain slice.
+//   The new owner needs to allocator.free() it.
 ```
-alloc/dupe/realloc/allocPrint  => deallocate with allocator.free()  
-create                         => deallocate with allocator.destroy()  
+
+So, the thing to remember:
+```
+alloc/dupe/realloc/allocPrint  ← deallocate with allocator.free()  
+create                         ← deallocate with allocator.destroy()
+"managed"                      ← deallocate with .deinit(allocator)
+"managed" => transferred out   ← deallocate with allocator.free()
 ```
 
 ### allocator.alloc(T, n)
